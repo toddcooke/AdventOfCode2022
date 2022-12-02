@@ -12,6 +12,7 @@ import Foundation
 let adventDir = "/Users/toddcooke/Desktop/AdventOfCode2022/AdventOfCode2022/"
 
 print(day1())
+print(day1Part2())
 
 
 
