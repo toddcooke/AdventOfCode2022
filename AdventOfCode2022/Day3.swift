@@ -29,19 +29,36 @@ func day3() -> Int {
         guard let inBoth = compartment1.intersection(compartment2).first else {
             continue
         }
-        let unicodeValue = inBoth.asciiValue!
-        let val = {
-            if inBoth.isLowercase {
-                return Int(unicodeValue) - 96
-            } else if inBoth.isUppercase {
-                return Int(unicodeValue) - 38
-            } else {
-                print("not upper or lowercase")
-                exit(1)
-            }
-        }()
-        prioritySum += val
+        prioritySum += charValue(inBoth: inBoth)
     }
     return prioritySum
 
+}
+
+func charValue(inBoth: Character) -> Int {
+    let unicodeValue = inBoth.asciiValue!
+    if inBoth.isLowercase {
+        return Int(unicodeValue) - 96
+    } else if inBoth.isUppercase {
+        return Int(unicodeValue) - 38
+    } else {
+        print("not upper or lowercase")
+        exit(1)
+    }
+}
+
+func day3Part2() -> Int {
+    let contents = try! String(contentsOfFile: adventDir + "day3.txt")
+    let rucksacks: [String] = contents.components(separatedBy: "\n")
+    var rucks: [String] = []
+    var sum = 0
+    for ruck in rucksacks {
+        rucks.append(ruck)
+        if rucks.count == 3 {
+            let badgeItemType = Set(rucks[0]).intersection(rucks[1]).intersection(rucks[2]).first!
+            sum += charValue(inBoth: badgeItemType)
+            rucks = []
+        }
+    }
+    return sum
 }
