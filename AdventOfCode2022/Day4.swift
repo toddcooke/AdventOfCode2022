@@ -17,9 +17,15 @@ extension String {
 struct Assignment {
     var startSection: Int
     var endSection: Int
-    func contains(other: Assignment) -> Bool {
+
+    func fullyContains(other: Assignment) -> Bool {
         endSection - other.endSection >= 0 &&
                 other.startSection - startSection >= 0
+    }
+
+    func hasSameSection(other: Assignment) -> Bool {
+        endSection - other.startSection >= 0 &&
+                other.endSection - startSection >= 0
     }
 }
 
@@ -31,7 +37,22 @@ func day4() -> Int {
         let split = pair.components(separatedBy: ",")
         let assignmentOne: Assignment = (split.first?.toAssignment())!
         let assignmentTwo: Assignment = (split.last?.toAssignment())!
-        if assignmentOne.contains(other: assignmentTwo) || assignmentTwo.contains(other: assignmentOne) {
+        if assignmentOne.fullyContains(other: assignmentTwo) || assignmentTwo.fullyContains(other: assignmentOne) {
+            fullyContainCount += 1
+        }
+    }
+    return fullyContainCount
+}
+
+func day4Part2() -> Int {
+    let contents = try! String(contentsOfFile: adventDir + "day4.txt")
+    let sectionAssignmentPairs: [String] = contents.components(separatedBy: "\n")
+    var fullyContainCount = 0
+    for pair in sectionAssignmentPairs {
+        let split = pair.components(separatedBy: ",")
+        let assignmentOne: Assignment = (split.first?.toAssignment())!
+        let assignmentTwo: Assignment = (split.last?.toAssignment())!
+        if assignmentOne.hasSameSection(other: assignmentTwo) {
             fullyContainCount += 1
         }
     }
