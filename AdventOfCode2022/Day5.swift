@@ -4,7 +4,7 @@
 
 import Foundation
 
-func day5() -> String {
+func day5(partTwo: Bool = false) -> String {
     let contents = try! String(contentsOfFile: adventDir + "day5.txt")
     let split: [String] = contents.components(separatedBy: "\n\n")
     let startingStacks = split[0].components(separatedBy: "\n")
@@ -40,11 +40,17 @@ func day5() -> String {
 
 //        print("stacks pre move:")
 //        print(stacks)
-        for _ in 1...moveCount {
+        if partTwo {
+            let moved = stacks[from - 1].suffix(moveCount)
+            stacks[from - 1].removeLast(moveCount)
+            stacks[to - 1].append(contentsOf: moved)
+        } else {
+            for _ in 1...moveCount {
 //            print("movecount,from,to")
 //            print(moveCount, from, to)
-            let moved = stacks[from - 1].popLast()!
-            stacks[to - 1].append(moved)
+                let moved = stacks[from - 1].popLast()!
+                stacks[to - 1].append(moved)
+            }
         }
 //        print("stacks post move:")
 //        print(stacks)
