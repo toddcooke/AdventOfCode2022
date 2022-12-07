@@ -21,5 +21,6 @@ let adventDir = "/Users/toddcooke/Desktop/AdventOfCode2022/AdventOfCode2022/"
 //print(day4Part2())
 //print(day5())
 //print(day5(partTwo: true))
-print(day6())
-print(day6(partTwo: true))
+//print(day6())
+//print(day6(partTwo: true))
+print(day7())
