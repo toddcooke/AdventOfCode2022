@@ -14,7 +14,7 @@ import Foundation
 
 class Node: CustomStringConvertible {
     var description: String {
-        "\(name) \(size) \(!children.isEmpty)"
+        "(\(name) \(!children.isEmpty ? "f" : "d") \(size))"
     }
 
     var children: [Node] = []
@@ -46,7 +46,6 @@ func sumDirSize(root: Node) {
         var n = q.count
         while n > 0 {
             let p = q.removeFirst()
-            print(p)
             for c in p.children {
                 q.append(c)
             }
@@ -56,7 +55,7 @@ func sumDirSize(root: Node) {
                 while par != nil {
                     // TODO: this seems to not work correctly
                     p.parent!.size += p.size
-                    par = p.parent
+                    par = par?.parent
                 }
             }
             n -= 1
@@ -126,6 +125,5 @@ func day7() -> Int {
     }
 
     sumDirSize(root: root)
-    print()
     return sumDirsOver100k(root: root)
 }
