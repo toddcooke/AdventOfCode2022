@@ -22,14 +22,8 @@ class Point: CustomStringConvertible {
     }
 
     func move(_ direction: String) {
-        if head != nil {
-            if onTopOf(head!) || isDiagonal(head!) || isAdjacent(head!) {
-                return
-            }
-        }
-        if head == nil {
+        if head == nil { // Move head
             lastPoint = [x, y]
-            // move normally
             if direction == "U" {
                 up()
             } else if direction == "R" {
@@ -41,8 +35,10 @@ class Point: CustomStringConvertible {
             } else {
                 fatalError("Error: missing normal move case, direction:" + direction)
             }
-        } else {
-            // tail: move diagonally
+        } else { // Move tail
+            if onTopOf(head!) || isDiagonal(head!) || isAdjacent(head!) {
+                return
+            }
             moveToLastPoint()
         }
     }
@@ -129,23 +125,16 @@ func day9() -> Int {
         let distance = Int(components[1])!
 
         for _ in 0...distance - 1 {
-            print("\nBefore move")
-            print("head", head)
-            print("tail", tail)
+//            print("\nBefore move")
+//            print("head", head)
+//            print("tail", tail)
             head.move(direction)
             tail.move(direction)
-            print("After move")
-            print("head", head)
-            print("tail", tail)
+//            print("After move")
+//            print("head", head)
+//            print("tail", tail)
         }
     }
 
-    print(tail.tilesVisited.sorted { x, y in
-        x.first! < y.first!
-    })
-//    var grid: [[Int]] = [[Int]](repeating: [], count: 10)
-//    for tile in tail.tilesVisited {
-//
-//    }
     return tail.tilesVisited.count
 }
