@@ -6,14 +6,14 @@ import Foundation
 
 class Point: CustomStringConvertible {
     var description: String {
-        "x:\(x) y:\(y) tilesVisited:\(tilesVisited) head=\(head != nil)"
+        "x:\(x) y:\(y) head=\(head != nil)"
     }
 
     var x: Int = 0
     var y: Int = 0
     var tilesVisited: Set<[Int]> = [[0, 0]]
     var head: Point? = nil // only tail should have pointer to head
-    var lastMove = ""
+    var lastPoint: [Int] = [0, 0] // used for tail to jump back to head
 
     init(x: Int, y: Int, head: Point?) {
         self.x = x
@@ -22,16 +22,13 @@ class Point: CustomStringConvertible {
     }
 
     func move(_ direction: String) {
-        if head != nil && onTopOf(head!) {
-            return
+        if head != nil {
+            if onTopOf(head!) || isDiagonal(head!) || isAdjacent(head!) {
+                return
+            }
         }
-        if head != nil && isDiagonal(head!) {
-            // do nothing
-            print("moving diagonally...")
-            return
-        }
-        if head == nil || (head != nil && isAdjacent(head!)) {
-            lastMove = direction
+        if head == nil {
+            lastPoint = [x, y]
             // move normally
             if direction == "U" {
                 up()
@@ -45,22 +42,15 @@ class Point: CustomStringConvertible {
                 fatalError("Error: missing normal move case, direction:" + direction)
             }
         } else {
-            // move diagonally
-            guard let head else {
-                fatalError("head must not be nil")
-            }
-            if head.x > x && head.y > y {
-                upright()
-            } else if head.x < x && head.y < y {
-                downleft()
-            } else if head.x > x && head.y < y {
-                downright()
-            } else if head.x < x && head.y > y {
-                upleft()
-            } else {
-                fatalError("Error: missing move diagonally case")
-            }
+            // tail: move diagonally
+            moveToLastPoint()
         }
+    }
+
+    func moveToLastPoint() {
+        x = head!.lastPoint.first!
+        y = head!.lastPoint.last!
+        tilesVisited.insert([x, y])
     }
 
     func up() {
@@ -108,15 +98,17 @@ class Point: CustomStringConvertible {
     }
 
     func isAdjacent(_ other: Point) -> Bool {
-        (abs(x - other.x) + abs(y - other.y)) <= 1
+        x + 1 == other.x && y == other.y ||
+                x - 1 == other.x && y == other.y ||
+                y + 1 == other.y && x == other.x ||
+                y - 1 == other.y && x == other.x
     }
 
     func isDiagonal(_ other: Point) -> Bool {
-        (x + 1 == other.x && y + 1 == other.y ||
-                x - 1 == other.x && y - 1 == other.y ||
-                x - 1 == other.x && y + 1 == other.y ||
-                x + 1 == other.x && y - 1 == other.y
-        )
+        x + 1 == other.x && y + 1 == other.y || // Top right
+                x + 1 == other.x && y - 1 == other.y || // Bottom right
+                x - 1 == other.x && y - 1 == other.y || // Bottom left
+                x - 1 == other.x && y + 1 == other.y // Top left
     }
 
     func onTopOf(_ other: Point) -> Bool {
@@ -137,8 +129,14 @@ func day9() -> Int {
         let distance = Int(components[1])!
 
         for _ in 0...distance - 1 {
+            print("\nBefore move")
+            print("head", head)
+            print("tail", tail)
             head.move(direction)
             tail.move(direction)
+            print("After move")
+            print("head", head)
+            print("tail", tail)
         }
     }
 
