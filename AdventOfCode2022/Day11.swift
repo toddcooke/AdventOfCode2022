@@ -49,35 +49,35 @@ class Monkey {
     If false: throw to monkey 3
      */
     func inspect() {
-        if startingItems.count == 0 {
-            return
-        }
-        var item = startingItems.removeFirst()
-        inspectCount += 1
-        let itemResult = {
-            if opNumbers.isEmpty {
-                return op.expression(one: item, two: item)
+        for _ in startingItems {
+            let item = startingItems.removeFirst()
+            inspectCount += 1
+            let itemResult = {
+                if opNumbers.isEmpty {
+                    return op.expression(one: item, two: item)
+                } else {
+                    return op.expression(one: item, two: opNumbers.first!)
+                }
+            }() / 3
+
+            print()
+            print("Monkey \(monkeyNumber) inspected items \(inspectCount) times.")
+            print("""
+                  Monkey \(monkeyNumber):
+                    Monkey inspects an item with a worry level of \(item).
+                        Worry level is \(op) by \(opNumbers) to \(itemResult).
+                        Monkey gets bored with item. Worry level is divided by \(testDivisibleBy) to \(itemResult / testDivisibleBy).
+                  """)
+            // test if divisible
+            if itemResult % testDivisibleBy == 0 {
+                print("Current worry level is divisible by \(testDivisibleBy)")
+                print("Item with worry level \(itemResult / testDivisibleBy) is thrown to monkey \(String(describing: ifTrue?.monkeyNumber))")
+                ifTrue!.startingItems.append(itemResult / testDivisibleBy)
             } else {
-                return op.expression(one: item, two: opNumbers.first!)
+                print("Current worry level is not divisible by \(testDivisibleBy)")
+                print("Item with worry level \(itemResult / testDivisibleBy) is thrown to monkey \(String(describing: ifFalse?.monkeyNumber))")
+                ifFalse!.startingItems.append(itemResult / testDivisibleBy)
             }
-        }()
-        print()
-        print("Monkey \(monkeyNumber) inspected items \(inspectCount) times.")
-        print("""
-              Monkey \(monkeyNumber):
-                Monkey inspects an item with a worry level of \(item).
-                    Worry level is \(op) by \(opNumbers) to \(itemResult).
-                    Monkey gets bored with item. Worry level is divided by \(testDivisibleBy) to \(itemResult / testDivisibleBy).
-              """)
-        // test if divisible
-        if itemResult % testDivisibleBy == 0 {
-            print("Current worry level is divisible by \(testDivisibleBy)")
-            print("Item with worry level \(itemResult / testDivisibleBy) is thrown to monkey \(String(describing: ifTrue?.monkeyNumber))")
-            ifTrue!.startingItems.append(itemResult / testDivisibleBy)
-        } else {
-            print("Current worry level is not divisible by \(testDivisibleBy)")
-            print("Item with worry level \(itemResult / testDivisibleBy) is thrown to monkey \(String(describing: ifFalse?.monkeyNumber))")
-            ifFalse!.startingItems.append(itemResult / testDivisibleBy)
         }
     }
 }
@@ -89,7 +89,6 @@ func day11() -> Int {
 
     // init monkeys
     for monkey in monkeyStrings {
-        let monkeyComponents = monkey.components(separatedBy: " ")
         let monkeyNum: Int = Int(String(monkey.components(separatedBy: ":")[0].last!))!
         let startingItems: [Int] = monkey
                 .components(separatedBy: "\n")[1]
@@ -108,7 +107,7 @@ func day11() -> Int {
                 .map { str in
                     Int(str.trimmingCharacters(in: .whitespacesAndNewlines))!
                 }
-        print("xxx",opNumbers)
+        print("xxx", opNumbers)
         let op: String = monkey
                 .components(separatedBy: "\n")[2]
                 .components(separatedBy: " ")
@@ -141,15 +140,16 @@ func day11() -> Int {
         monkeyMap[monkeyNum]?.ifFalse = monkeyMap[falseMonkeyNum]
     }
 
-    for round in 1...20 {
+    for _ in 1...20 {
 //        print(round)
-        for monkey in monkeyMap.values.sorted { element, element2 in
-            element.monkeyNumber < element2.monkeyNumber } {
+        for monkey in monkeyMap.values.sorted(by: { element, element2 in
+            element.monkeyNumber < element2.monkeyNumber
+        }) {
             monkey.inspect()
         }
     }
 
-    var topMonkeys = monkeyMap.values
+    let topMonkeys = monkeyMap.values
             .sorted { one, two in
                 one.inspectCount > two.inspectCount
             }[0...1]
